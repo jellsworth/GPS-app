@@ -311,10 +311,10 @@
         return '#22c55e';                 // green
       }
 
-      function segmentGrade(p0, p1) {
-        const dElev = p1.parsed.y - p0.parsed.y;       // feet
-        const dDist = (p1.parsed.x - p0.parsed.x) * 5280; // feet (miles → feet)
-        return dDist > 0 ? Math.abs(dElev / dDist) * 100 : 0;
+      // d0, d1 in miles; e0, e1 in feet
+      function segmentGrade(d0, d1, e0, e1) {
+        const dDist = (d1 - d0) * 5280; // convert miles to feet
+        return dDist > 0 ? Math.abs((e1 - e0) / dDist) * 100 : 0;
       }
 
       const fillGradient = ctx.createLinearGradient(0, 0, 0, 280);
@@ -335,7 +335,10 @@
             pointRadius: 0,
             pointHoverRadius: 4,
             segment: {
-              borderColor: ctx => gradeColor(segmentGrade(ctx.p0, ctx.p1)),
+              borderColor: ctx => gradeColor(segmentGrade(
+                labels[ctx.p0.parsed.x], labels[ctx.p1.parsed.x],
+                ctx.p0.parsed.y,         ctx.p1.parsed.y
+              )),
             },
           }]
         },
@@ -352,9 +355,8 @@
                   const i = ctx.dataIndex;
                   let gradeStr = '';
                   if (i > 0) {
-                    const p0 = { parsed: { x: labels[i-1], y: elevations[i-1] } };
-                    const p1 = { parsed: { x: labels[i],   y: elevations[i]   } };
-                    gradeStr = ` (${segmentGrade(p0, p1).toFixed(1)}% grade)`;
+                    const grade = segmentGrade(labels[i-1], labels[i], elevations[i-1], elevations[i]);
+                    gradeStr = ` (${grade.toFixed(1)}% grade)`;
                   }
                   return `Elevation: ${ctx.raw} ft${gradeStr}`;
                 },
