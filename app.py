@@ -70,17 +70,19 @@ def analyze_track(points):
         else:
             elevation_loss += abs(ele_diff)
 
+    M_TO_FT = 3.28084
+    M_TO_MI = 0.000621371
+
     # Average speed (requires time data)
-    avg_speed_kmh = None
+    avg_speed_mph = None
     if points[0]['time'] and points[-1]['time']:
         from datetime import datetime
-        fmt = '%Y-%m-%dT%H:%M:%SZ'
         try:
             t_start = datetime.strptime(points[0]['time'].rstrip('Z').split('.')[0], '%Y-%m-%dT%H:%M:%S')
             t_end = datetime.strptime(points[-1]['time'].rstrip('Z').split('.')[0], '%Y-%m-%dT%H:%M:%S')
             duration_h = (t_end - t_start).total_seconds() / 3600
             if duration_h > 0:
-                avg_speed_kmh = (total_distance / 1000) / duration_h
+                avg_speed_mph = (total_distance * M_TO_MI) / duration_h
         except ValueError:
             pass
 
@@ -88,18 +90,18 @@ def analyze_track(points):
     n = len(points)
     step = max(1, n // 500)
     profile = [
-        {'d': round(cumulative_distances[i] / 1000, 3), 'e': round(points[i]['ele'], 1)}
+        {'d': round(cumulative_distances[i] * M_TO_MI, 3), 'e': round(points[i]['ele'] * M_TO_FT, 1)}
         for i in range(0, n, step)
     ]
     # Always include last point
     if (n - 1) % step != 0:
-        profile.append({'d': round(cumulative_distances[-1] / 1000, 3), 'e': round(points[-1]['ele'], 1)})
+        profile.append({'d': round(cumulative_distances[-1] * M_TO_MI, 3), 'e': round(points[-1]['ele'] * M_TO_FT, 1)})
 
     return {
-        'distance_km': round(total_distance / 1000, 2),
-        'elevation_gain_m': round(elevation_gain, 1),
-        'elevation_loss_m': round(elevation_loss, 1),
-        'avg_speed_kmh': round(avg_speed_kmh, 2) if avg_speed_kmh is not None else None,
+        'distance_mi': round(total_distance * M_TO_MI, 2),
+        'elevation_gain_ft': round(elevation_gain * M_TO_FT, 1),
+        'elevation_loss_ft': round(elevation_loss * M_TO_FT, 1),
+        'avg_speed_mph': round(avg_speed_mph, 2) if avg_speed_mph is not None else None,
         'profile': profile,
         'point_count': n,
     }

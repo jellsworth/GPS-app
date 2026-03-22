@@ -258,10 +258,10 @@
     function displayResults(data) {
       // Build stat boxes
       const stats = [
-        { label: 'Distance', value: data.distance_km, unit: 'km' },
-        { label: 'Elevation Gain', value: data.elevation_gain_m, unit: 'm' },
-        { label: 'Elevation Loss', value: data.elevation_loss_m, unit: 'm' },
-        { label: 'Avg Speed', value: data.avg_speed_kmh !== null ? data.avg_speed_kmh : '—', unit: data.avg_speed_kmh !== null ? 'km/h' : '' },
+        { label: 'Distance', value: data.distance_mi, unit: 'mi' },
+        { label: 'Elevation Gain', value: data.elevation_gain_ft, unit: 'ft' },
+        { label: 'Elevation Loss', value: data.elevation_loss_ft, unit: 'ft' },
+        { label: 'Avg Speed', value: data.avg_speed_mph !== null ? data.avg_speed_mph : '—', unit: data.avg_speed_mph !== null ? 'mph' : '' },
         { label: 'Track Points', value: data.point_count.toLocaleString(), unit: '' },
       ];
 
@@ -289,7 +289,7 @@
         data: {
           labels,
           datasets: [{
-            label: 'Elevation (m)',
+            label: 'Elevation (ft)',
             data: elevations,
             borderColor: '#38bdf8',
             borderWidth: 2,
@@ -308,8 +308,8 @@
             legend: { display: false },
             tooltip: {
               callbacks: {
-                title: items => `Distance: ${items[0].label} km`,
-                label: item => `Elevation: ${item.raw} m`,
+                title: items => `Distance: ${items[0].label} mi`,
+                label: item => `Elevation: ${item.raw} ft`,
               },
               backgroundColor: '#1e293b',
               borderColor: '#334155',
@@ -320,7 +320,7 @@
           },
           scales: {
             x: {
-              title: { display: true, text: 'Distance (km)', color: '#64748b', font: { size: 11 } },
+              title: { display: true, text: 'Distance (mi)', color: '#64748b', font: { size: 11 } },
               ticks: {
                 color: '#64748b',
                 maxTicksLimit: 10,
@@ -329,7 +329,7 @@
               grid: { color: '#1e293b' },
             },
             y: {
-              title: { display: true, text: 'Elevation (m)', color: '#64748b', font: { size: 11 } },
+              title: { display: true, text: 'Elevation (ft)', color: '#64748b', font: { size: 11 } },
               ticks: { color: '#64748b' },
               grid: { color: '#334155' },
             }
